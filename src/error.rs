@@ -5,13 +5,13 @@ use std::fmt::{self, Display};
 pub struct Error {}
 
 impl ser::Error for Error {
-    fn custom<T: Display>(msg: T) -> Self {
+    fn custom<T: Display>(_msg: T) -> Self {
         todo!()
     }
 }
 
 impl Display for Error {
-    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, _formatter: &mut fmt::Formatter) -> fmt::Result {
         todo!()
     }
 }
