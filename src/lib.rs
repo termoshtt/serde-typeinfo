@@ -1,6 +1,47 @@
+//! "Serialize" type info to runtime tag.
+//!
+//! Examples
+//! ---------
+//!
+//! - `u8` integer will be serialized into [tag::Primitive::U8]
+//!
+//! ```
+//! use serde_typeinfo::*;
+//! use serde::Serialize;
+//!
+//! assert_eq!(type_of_value(&0_u8), TypeTag::Primitive(Primitive::U8));
+//! ```
+//!
+//! - User defined struct with `serde::Serialize` trait implementation
+//!   will be serialized [tag::TypeTag::Struct].
+//!
+//! ```
+//! use serde_typeinfo::*;
+//! use serde::Serialize;
+//!
+//! #[derive(Serialize)]
+//! struct A {
+//!     a: u8,
+//!     b: u8,
+//! }
+//!
+//! assert_eq!(
+//!     type_of_value(&A { a: 0, b: 0 }),
+//!     TypeTag::Struct {
+//!         name: "A",
+//!         fields: vec![
+//!             ("a", Primitive::U8.into()),
+//!             ("b", Primitive::U8.into()),
+//!         ]
+//!     }
+//! );
+//! ```
+
 pub mod error;
 pub mod serializer;
 pub mod tag;
+
+pub use tag::*;
 
 use serde::Serialize;
 
@@ -16,7 +57,7 @@ pub fn type_info<T: Serialize + Default>() -> tag::TypeTag {
 
 #[cfg(test)]
 mod test {
-    use crate::{tag::*, *};
+    use crate::*;
     use serde::Serialize;
 
     #[test]

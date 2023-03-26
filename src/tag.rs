@@ -1,4 +1,4 @@
-/// Type tag represented as serde data model
+/// Type tag based on [serde data model](https://serde.rs/data-model.html)
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum TypeTag {
     Primitive(Primitive),
