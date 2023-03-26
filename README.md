@@ -5,7 +5,7 @@
 Examples
 ---------
 
-- `u8` integer will be "serialized" into [Primitive::U8] enum **without** its value
+- `u8` integer will be "serialized" into `Primitive::U8` enum **without** its value
 
 ```rust
 use serde_typeinfo::*;
@@ -18,7 +18,7 @@ assert_eq!(
 ```
 
 - User defined struct with `serde::Serialize` trait implementation
-  will be "serialized" into [TypeTag::Struct] as its name and its fields' names and types,
+  will be "serialized" into `TypeTag::Struct` as its name and its fields' names and types,
   not includes values.
 
 ```rust
@@ -50,7 +50,7 @@ License
 
 This project is licensed under either of
 
-- Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or https://www.apache.org/licenses/LICENSE-2.0)
+- Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or <https://www.apache.org/licenses/LICENSE-2.0>)
 - MIT license ([LICENSE-MIT](LICENSE-MIT) or <https://opensource.org/licenses/MIT>)
 
 at your option.
