@@ -1,4 +1,5 @@
 /// Type tag represented as serde data model
+#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum TypeTag {
     Primitive(Primitive),
     String(String),
