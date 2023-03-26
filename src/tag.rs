@@ -2,10 +2,10 @@
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum TypeTag {
     Primitive(Primitive),
-    String(String),
+    String,
     Struct {
-        name: String,
-        fields: Vec<(String, Self)>,
+        name: &'static str,
+        fields: Vec<(&'static str, Self)>,
     },
     // TODO more entries
 }
@@ -26,4 +26,10 @@ pub enum Primitive {
     F32,
     F64,
     Char,
+}
+
+impl From<Primitive> for TypeTag {
+    fn from(p: Primitive) -> Self {
+        TypeTag::Primitive(p)
+    }
 }

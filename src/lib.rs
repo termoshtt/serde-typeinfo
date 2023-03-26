@@ -2,15 +2,42 @@ pub mod error;
 pub mod serializer;
 pub mod tag;
 
+use serde::Serialize;
+
+pub fn type_of_value<T: Serialize>(value: &T) -> tag::TypeTag {
+    let serializer = crate::serializer::TypeTagSerializer {};
+    Serialize::serialize(value, serializer).unwrap()
+}
+
+pub fn type_info<T: Serialize + Default>() -> tag::TypeTag {
+    let value = T::default();
+    type_of_value(&value)
+}
+
 #[cfg(test)]
 mod test {
-    use crate::tag::*;
+    use crate::{tag::*, *};
+    use serde::Serialize;
 
     #[test]
     fn u8() {
-        let a = 0_u8;
-        let serializer = crate::serializer::TypeTagSerializer {};
-        let tag = serde::Serialize::serialize(&a, serializer).unwrap();
-        assert_eq!(tag, TypeTag::Primitive(Primitive::U8));
+        assert_eq!(type_of_value(&0_u8), TypeTag::Primitive(Primitive::U8));
+    }
+
+    #[derive(Serialize)]
+    struct A {
+        a: u8,
+        b: u8,
+    }
+
+    #[test]
+    fn struct_a() {
+        assert_eq!(
+            type_of_value(&A { a: 0, b: 0 }),
+            TypeTag::Struct {
+                name: "A",
+                fields: vec![("a", Primitive::U8.into()), ("b", Primitive::U8.into()),]
+            }
+        );
     }
 }
