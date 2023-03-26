@@ -3,6 +3,14 @@ use serde::{ser, Serialize};
 
 pub struct TypeTagSerializer {}
 
+macro_rules! serialize_primitive {
+    ($f:ident, $t:ty, $p:expr) => {
+        fn $f(self, _v: $t) -> Result<Self::Ok> {
+            Ok(TypeTag::Primitive($p))
+        }
+    };
+}
+
 impl ser::Serializer for TypeTagSerializer {
     type Ok = TypeTag;
 
@@ -16,53 +24,18 @@ impl ser::Serializer for TypeTagSerializer {
     type SerializeStruct = TypeTagStruct;
     type SerializeStructVariant = Self;
 
-    fn serialize_bool(self, _v: bool) -> Result<Self::Ok> {
-        todo!()
-    }
-
-    fn serialize_i8(self, _v: i8) -> Result<Self::Ok> {
-        todo!()
-    }
-
-    fn serialize_i16(self, _v: i16) -> Result<Self::Ok> {
-        todo!()
-    }
-
-    fn serialize_i32(self, _v: i32) -> Result<Self::Ok> {
-        todo!()
-    }
-
-    fn serialize_i64(self, _v: i64) -> Result<Self::Ok> {
-        todo!()
-    }
-
-    fn serialize_u8(self, _v: u8) -> Result<Self::Ok> {
-        Ok(TypeTag::Primitive(Primitive::U8))
-    }
-
-    fn serialize_u16(self, _v: u16) -> Result<Self::Ok> {
-        todo!()
-    }
-
-    fn serialize_u32(self, _v: u32) -> Result<Self::Ok> {
-        todo!()
-    }
-
-    fn serialize_u64(self, _v: u64) -> Result<Self::Ok> {
-        todo!()
-    }
-
-    fn serialize_f32(self, _v: f32) -> Result<Self::Ok> {
-        todo!()
-    }
-
-    fn serialize_f64(self, _v: f64) -> Result<Self::Ok> {
-        todo!()
-    }
-
-    fn serialize_char(self, _v: char) -> Result<Self::Ok> {
-        todo!()
-    }
+    serialize_primitive!(serialize_bool, bool, Primitive::Bool);
+    serialize_primitive!(serialize_i8, i8, Primitive::I8);
+    serialize_primitive!(serialize_i16, i16, Primitive::I16);
+    serialize_primitive!(serialize_i32, i32, Primitive::I32);
+    serialize_primitive!(serialize_i64, i64, Primitive::I64);
+    serialize_primitive!(serialize_u8, u8, Primitive::U8);
+    serialize_primitive!(serialize_u16, u16, Primitive::U16);
+    serialize_primitive!(serialize_u32, u32, Primitive::U32);
+    serialize_primitive!(serialize_u64, u64, Primitive::U64);
+    serialize_primitive!(serialize_f32, f32, Primitive::F32);
+    serialize_primitive!(serialize_f64, f64, Primitive::F64);
+    serialize_primitive!(serialize_char, char, Primitive::Char);
 
     fn serialize_str(self, _v: &str) -> Result<Self::Ok> {
         todo!()
