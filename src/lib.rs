@@ -1,19 +1,23 @@
-//! "Serialize" type info to runtime tag.
+//! "Serialize" type info to a runtime tag based on [serde data model](https://serde.rs/data-model.html).
 //!
 //! Examples
 //! ---------
 //!
-//! - `u8` integer will be serialized into [tag::Primitive::U8]
+//! - `u8` integer will be "serialized" into [Primitive::U8] enum **without** its value
 //!
 //! ```
 //! use serde_typeinfo::*;
 //! use serde::Serialize;
 //!
-//! assert_eq!(type_of_value(&0_u8), TypeTag::Primitive(Primitive::U8));
+//! assert_eq!(
+//!     type_of_value(&32_u8),
+//!     TypeTag::Primitive(Primitive::U8), // only tag, not includes 32
+//! );
 //! ```
 //!
 //! - User defined struct with `serde::Serialize` trait implementation
-//!   will be serialized [tag::TypeTag::Struct].
+//!   will be "serialized" into [TypeTag::Struct] as its name and its fields' names and types,
+//!   not includes values.
 //!
 //! ```
 //! use serde_typeinfo::*;
@@ -26,7 +30,7 @@
 //! }
 //!
 //! assert_eq!(
-//!     type_of_value(&A { a: 0, b: 0 }),
+//!     type_of_value(&A { a: 2, b: 3 }),
 //!     TypeTag::Struct {
 //!         name: "A",
 //!         fields: vec![
@@ -39,8 +43,8 @@
 
 pub mod error;
 pub mod serializer;
-pub mod tag;
 
+mod tag;
 pub use tag::*;
 
 use serde::Serialize;
