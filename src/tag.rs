@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 /// Type tag based on [serde data model](https://serde.rs/data-model.html)
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum TypeTag {
@@ -33,6 +35,18 @@ pub enum TypeTag {
         fields: Vec<(&'static str, Self)>,
     },
     // TODO more entries
+}
+
+impl TypeTag {
+    pub fn from_value<T: Serialize>(value: &T) -> Self {
+        let serializer = crate::serializer::TypeTagSerializer {};
+        Serialize::serialize(value, serializer).unwrap()
+    }
+
+    pub fn from_default<T: Serialize + Default>() -> Self {
+        let value = T::default();
+        Self::from_value(&value)
+    }
 }
 
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
