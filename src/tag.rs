@@ -27,6 +27,11 @@ pub enum TypeTag {
         name: &'static str,
         fields: Vec<(&'static str, Self)>,
     },
+    StructVariant {
+        name: &'static str,
+        variant: &'static str,
+        fields: Vec<(&'static str, Self)>,
+    },
     // TODO more entries
 }
 
