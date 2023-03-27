@@ -3,6 +3,26 @@
 pub enum TypeTag {
     Primitive(Primitive),
     String,
+    ByteArray,
+    Some(Box<Self>),
+    None,
+    Unit,
+    UnitStruct {
+        name: &'static str,
+    },
+    UnitVariant {
+        name: &'static str,
+        variant: &'static str,
+    },
+    NewTypeStruct {
+        name: &'static str,
+        inner: Box<Self>,
+    },
+    NewTypeVariant {
+        name: &'static str,
+        variant: &'static str,
+        inner: Box<Self>,
+    },
     Struct {
         name: &'static str,
         fields: Vec<(&'static str, Self)>,

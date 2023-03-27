@@ -38,59 +38,72 @@ impl ser::Serializer for TypeTagSerializer {
     serialize_primitive!(serialize_char, char, Primitive::Char);
 
     fn serialize_str(self, _v: &str) -> Result<Self::Ok> {
-        todo!()
+        Ok(TypeTag::String)
     }
 
     fn serialize_bytes(self, _v: &[u8]) -> Result<Self::Ok> {
-        todo!()
+        Ok(TypeTag::ByteArray)
     }
 
     fn serialize_none(self) -> Result<Self::Ok> {
-        todo!()
+        Ok(TypeTag::None)
     }
 
-    fn serialize_some<T>(self, _value: &T) -> Result<Self::Ok>
+    fn serialize_some<T>(self, value: &T) -> Result<Self::Ok>
     where
         T: ?Sized + Serialize,
     {
-        todo!()
+        let tt_serializer = TypeTagSerializer {};
+        let tag = T::serialize(value, tt_serializer)?;
+        Ok(TypeTag::Some(Box::new(tag)))
     }
 
     fn serialize_unit(self) -> Result<Self::Ok> {
-        todo!()
+        Ok(TypeTag::Unit)
     }
 
-    fn serialize_unit_struct(self, _name: &'static str) -> Result<Self::Ok> {
-        todo!()
+    fn serialize_unit_struct(self, name: &'static str) -> Result<Self::Ok> {
+        Ok(TypeTag::UnitStruct { name })
     }
 
     fn serialize_unit_variant(
         self,
-        _name: &'static str,
+        name: &'static str,
         _variant_index: u32,
-        _variant: &'static str,
+        variant: &'static str,
     ) -> Result<Self::Ok> {
-        todo!()
+        Ok(TypeTag::UnitVariant { name, variant })
     }
 
-    fn serialize_newtype_struct<T>(self, _name: &'static str, _value: &T) -> Result<Self::Ok>
+    fn serialize_newtype_struct<T>(self, name: &'static str, value: &T) -> Result<Self::Ok>
     where
         T: ?Sized + Serialize,
     {
-        todo!()
+        let tt_serializer = TypeTagSerializer {};
+        let tag = T::serialize(value, tt_serializer)?;
+        Ok(TypeTag::NewTypeStruct {
+            name,
+            inner: Box::new(tag),
+        })
     }
 
     fn serialize_newtype_variant<T>(
         self,
-        _name: &'static str,
+        name: &'static str,
         _variant_index: u32,
-        _variant: &'static str,
-        _value: &T,
+        variant: &'static str,
+        value: &T,
     ) -> Result<Self::Ok>
     where
         T: ?Sized + Serialize,
     {
-        todo!()
+        let tt_serializer = TypeTagSerializer {};
+        let tag = T::serialize(value, tt_serializer)?;
+        Ok(TypeTag::NewTypeVariant {
+            name,
+            variant,
+            inner: Box::new(tag),
+        })
     }
 
     fn serialize_seq(self, _len: Option<usize>) -> Result<Self::SerializeSeq> {
