@@ -17,7 +17,7 @@ impl ser::Serializer for TypeTagSerializer {
     type Error = Error;
 
     type SerializeSeq = TypeTagSeq;
-    type SerializeTuple = Self;
+    type SerializeTuple = TypeTagSeq;
     type SerializeTupleStruct = TypeTagTupleStruct;
     type SerializeTupleVariant = TypeTagTupleVariant;
     type SerializeMap = Self;
@@ -111,7 +111,7 @@ impl ser::Serializer for TypeTagSerializer {
     }
 
     fn serialize_tuple(self, _len: usize) -> Result<Self::SerializeTuple> {
-        todo!()
+        Ok(TypeTagSeq { seq: Seq::new() })
     }
 
     fn serialize_tuple_struct(
@@ -189,19 +189,22 @@ impl ser::SerializeSeq for TypeTagSeq {
     }
 }
 
-impl ser::SerializeTuple for TypeTagSerializer {
+impl ser::SerializeTuple for TypeTagSeq {
     type Ok = TypeTag;
     type Error = Error;
 
-    fn serialize_element<T>(&mut self, _value: &T) -> Result<()>
+    fn serialize_element<T>(&mut self, value: &T) -> Result<()>
     where
         T: ?Sized + Serialize,
     {
-        todo!()
+        let tt_serializer = TypeTagSerializer {};
+        let tag = T::serialize(value, tt_serializer)?;
+        self.seq.push(tag);
+        Ok(())
     }
 
     fn end(self) -> Result<Self::Ok> {
-        todo!()
+        Ok(TypeTag::Tuple(self.seq))
     }
 }
 

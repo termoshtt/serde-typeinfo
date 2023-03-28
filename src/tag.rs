@@ -151,6 +151,30 @@ pub enum TypeTag {
     /// ```
     /// # use serde_typeinfo::*;
     /// # use serde::Serialize;
+    ///
+    /// // heterogeneous tuple
+    /// assert_eq!(
+    ///     TypeTag::from_value(&(true, 'c')),
+    ///     TypeTag::Tuple(Seq::Hetero(vec![
+    ///         TypeTag::Primitive(Primitive::Bool),
+    ///         TypeTag::Primitive(Primitive::Char),
+    ///     ]))
+    /// );
+    ///
+    /// // homogeneous tuple
+    /// assert_eq!(
+    ///     TypeTag::from_value(&[1_u8; 10]),
+    ///     TypeTag::Tuple(Seq::Homo {
+    ///         tag: Box::new(TypeTag::Primitive(Primitive::U8)),
+    ///         size: 10,
+    ///     })
+    /// );
+    /// ```
+    Tuple(Seq),
+
+    /// ```
+    /// # use serde_typeinfo::*;
+    /// # use serde::Serialize;
     /// #[derive(Serialize)]
     /// struct S(u8, u8);
     ///
