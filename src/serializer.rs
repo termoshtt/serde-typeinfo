@@ -53,8 +53,7 @@ impl ser::Serializer for TypeTagSerializer {
     where
         T: ?Sized + Serialize,
     {
-        let tt_serializer = TypeTagSerializer {};
-        let tag = T::serialize(value, tt_serializer)?;
+        let tag = TypeTag::from_value(value);
         Ok(TypeTag::Some(Box::new(tag)))
     }
 
@@ -79,8 +78,7 @@ impl ser::Serializer for TypeTagSerializer {
     where
         T: ?Sized + Serialize,
     {
-        let tt_serializer = TypeTagSerializer {};
-        let tag = T::serialize(value, tt_serializer)?;
+        let tag = TypeTag::from_value(value);
         Ok(TypeTag::NewTypeStruct {
             name,
             inner: Box::new(tag),
@@ -97,8 +95,7 @@ impl ser::Serializer for TypeTagSerializer {
     where
         T: ?Sized + Serialize,
     {
-        let tt_serializer = TypeTagSerializer {};
-        let tag = T::serialize(value, tt_serializer)?;
+        let tag = TypeTag::from_value(value);
         Ok(TypeTag::NewTypeVariant {
             name,
             variant,
@@ -181,8 +178,7 @@ impl ser::SerializeSeq for TypeTagSeq {
     where
         T: ?Sized + Serialize,
     {
-        let tt_serializer = TypeTagSerializer {};
-        let tag = T::serialize(value, tt_serializer)?;
+        let tag = TypeTag::from_value(value);
         self.seq.push(tag);
         Ok(())
     }
@@ -200,8 +196,7 @@ impl ser::SerializeTuple for TypeTagSeq {
     where
         T: ?Sized + Serialize,
     {
-        let tt_serializer = TypeTagSerializer {};
-        let tag = T::serialize(value, tt_serializer)?;
+        let tag = TypeTag::from_value(value);
         self.seq.push(tag);
         Ok(())
     }
@@ -225,8 +220,7 @@ impl ser::SerializeTupleStruct for TypeTagTupleStruct {
     where
         T: ?Sized + Serialize,
     {
-        let tt_serializer = TypeTagSerializer {};
-        let tag = T::serialize(value, tt_serializer)?;
+        let tag = TypeTag::from_value(value);
         self.fields.push(tag);
         Ok(())
     }
@@ -254,8 +248,7 @@ impl ser::SerializeTupleVariant for TypeTagTupleVariant {
     where
         T: ?Sized + Serialize,
     {
-        let tt_serializer = TypeTagSerializer {};
-        let tag = T::serialize(value, tt_serializer)?;
+        let tag = TypeTag::from_value(value);
         self.fields.push(tag);
         Ok(())
     }
@@ -283,8 +276,7 @@ impl ser::SerializeMap for TypeTagMap {
     where
         T: ?Sized + Serialize,
     {
-        let tt_serializer = TypeTagSerializer {};
-        let tag = T::serialize(key, tt_serializer)?;
+        let tag = TypeTag::from_value(key);
         self.key = Some(tag);
         Ok(())
     }
@@ -293,8 +285,7 @@ impl ser::SerializeMap for TypeTagMap {
     where
         T: ?Sized + Serialize,
     {
-        let tt_serializer = TypeTagSerializer {};
-        let tag = T::serialize(value, tt_serializer)?;
+        let tag = TypeTag::from_value(value);
         let key = self.key.take().unwrap();
         self.map.push(key, tag);
         Ok(())
@@ -320,8 +311,7 @@ impl ser::SerializeStruct for TypeTagStruct {
     where
         T: ?Sized + Serialize,
     {
-        let tt_serializer = TypeTagSerializer {};
-        let tag = T::serialize(value, tt_serializer)?;
+        let tag = TypeTag::from_value(value);
         self.fields.push((key, tag));
         Ok(())
     }
@@ -349,8 +339,7 @@ impl ser::SerializeStructVariant for TypeTagStructVariant {
     where
         T: ?Sized + Serialize,
     {
-        let tt_serializer = TypeTagSerializer {};
-        let tag = T::serialize(value, tt_serializer)?;
+        let tag = TypeTag::from_value(value);
         self.fields.push((key, tag));
         Ok(())
     }

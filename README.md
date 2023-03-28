@@ -8,11 +8,10 @@ Examples
 - `u8` integer will be "serialized" into `Primitive::U8` enum **without** its value
 
 ```rust
-use serde_typeinfo::*;
-use serde::Serialize;
+use serde_typeinfo::{TypeTag, Primitive};
 
 assert_eq!(
-    type_of_value(&32_u8),
+    TypeTag::from_value(&32_u8),
     TypeTag::Primitive(Primitive::U8), // only tag, not includes 32
 );
 ```
@@ -22,7 +21,7 @@ assert_eq!(
   not includes values.
 
 ```rust
-use serde_typeinfo::*;
+use serde_typeinfo::{TypeTag, Primitive};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -32,7 +31,7 @@ struct A {
 }
 
 assert_eq!(
-    type_of_value(&A { a: 2, b: 3 }),
+    TypeTag::from_value(&A { a: 2, b: 3 }),
     TypeTag::Struct {
         name: "A",
         fields: vec![

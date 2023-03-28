@@ -296,12 +296,12 @@ pub enum TypeTag {
 }
 
 impl TypeTag {
-    pub fn from_value<T: Serialize>(value: &T) -> Self {
+    pub fn from_value<T: ?Sized + Serialize>(value: &T) -> Self {
         let serializer = crate::serializer::TypeTagSerializer {};
         Serialize::serialize(value, serializer).unwrap()
     }
 
-    pub fn from_default<T: Serialize + Default>() -> Self {
+    pub fn from_default<T: ?Sized + Serialize + Default>() -> Self {
         let value = T::default();
         Self::from_value(&value)
     }
