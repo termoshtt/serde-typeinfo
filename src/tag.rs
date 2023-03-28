@@ -221,6 +221,34 @@ pub enum TypeTag {
     /// ```
     /// # use serde_typeinfo::*;
     /// # use serde::Serialize;
+    /// #[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Serialize)]
+    /// enum Value {
+    ///     Bool(bool),
+    ///     Char(char),
+    /// }
+    ///
+    /// assert_eq!(
+    ///     TypeTag::from_value(&maplit::btreemap!{ // Must be ordered
+    ///         Value::Bool(true) => Value::Char('c'),
+    ///         Value::Char('a') => Value::Bool(false),
+    ///     }),
+    ///     TypeTag::Map(Map::Hetero(vec![
+    ///         (
+    ///             TypeTag::from_value(&Value::Bool(true)),
+    ///             TypeTag::from_value(&Value::Char('c')),
+    ///         ),
+    ///         (
+    ///             TypeTag::from_value(&Value::Char('a')),
+    ///             TypeTag::from_value(&Value::Bool(false)),
+    ///         ),
+    ///     ]))
+    /// );
+    /// ```
+    Map(Map),
+
+    /// ```
+    /// # use serde_typeinfo::*;
+    /// # use serde::Serialize;
     /// #[derive(Serialize)]
     /// struct S { r: u8, g: u8, b: u8 };
     ///
@@ -315,24 +343,66 @@ pub enum Seq {
 
 impl Seq {
     pub fn new() -> Self {
-        Seq::Empty
+        Self::Empty
     }
 
     pub fn push(&mut self, new_tag: TypeTag) {
         match self {
-            Seq::Hetero(ref mut tags) => tags.push(new_tag),
-            Seq::Homo { tag, size } => {
+            Self::Hetero(ref mut tags) => tags.push(new_tag),
+            Self::Homo { tag, size } => {
                 if tag.as_ref() == &new_tag {
                     *size += 1;
                 } else {
-                    let mut hetero: Vec<TypeTag> = vec![*tag.clone(); *size];
+                    let mut hetero = vec![*tag.clone(); *size];
                     hetero.push(new_tag);
-                    *self = Seq::Hetero(hetero);
+                    *self = Self::Hetero(hetero);
                 }
             }
-            Seq::Empty => {
-                *self = Seq::Homo {
+            Self::Empty => {
+                *self = Self::Homo {
                     tag: Box::new(new_tag),
+                    size: 1,
+                };
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Map {
+    /// Homogeneous map
+    Homo {
+        key: Box<TypeTag>,
+        value: Box<TypeTag>,
+        size: usize,
+    },
+    /// Heterogeneous map
+    Hetero(Vec<(TypeTag, TypeTag)>),
+    /// No elements
+    Empty,
+}
+
+impl Map {
+    pub fn new() -> Self {
+        Self::Empty
+    }
+
+    pub fn push(&mut self, new_key: TypeTag, new_value: TypeTag) {
+        match self {
+            Self::Hetero(ref mut tags) => tags.push((new_key, new_value)),
+            Self::Homo { key, value, size } => {
+                if key.as_ref() == &new_key && value.as_ref() == &new_value {
+                    *size += 1;
+                } else {
+                    let mut hetero = vec![(*key.clone(), *value.clone()); *size];
+                    hetero.push((new_key, new_value));
+                    *self = Self::Hetero(hetero);
+                }
+            }
+            Self::Empty => {
+                *self = Self::Homo {
+                    key: Box::new(new_key),
+                    value: Box::new(new_value),
                     size: 1,
                 };
             }

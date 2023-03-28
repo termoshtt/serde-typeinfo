@@ -20,7 +20,7 @@ impl ser::Serializer for TypeTagSerializer {
     type SerializeTuple = TypeTagSeq;
     type SerializeTupleStruct = TypeTagTupleStruct;
     type SerializeTupleVariant = TypeTagTupleVariant;
-    type SerializeMap = Self;
+    type SerializeMap = TypeTagMap;
     type SerializeStruct = TypeTagStruct;
     type SerializeStructVariant = TypeTagStructVariant;
 
@@ -140,7 +140,10 @@ impl ser::Serializer for TypeTagSerializer {
     }
 
     fn serialize_map(self, _len: Option<usize>) -> Result<Self::SerializeMap> {
-        todo!()
+        Ok(TypeTagMap {
+            map: Map::new(),
+            key: None,
+        })
     }
 
     fn serialize_struct(self, name: &'static str, _len: usize) -> Result<Self::SerializeStruct> {
@@ -266,26 +269,40 @@ impl ser::SerializeTupleVariant for TypeTagTupleVariant {
     }
 }
 
-impl ser::SerializeMap for TypeTagSerializer {
+#[derive(Debug)]
+pub struct TypeTagMap {
+    map: Map,
+    key: Option<TypeTag>,
+}
+
+impl ser::SerializeMap for TypeTagMap {
     type Ok = TypeTag;
     type Error = Error;
 
-    fn serialize_key<T>(&mut self, _key: &T) -> Result<()>
+    fn serialize_key<T>(&mut self, key: &T) -> Result<()>
     where
         T: ?Sized + Serialize,
     {
-        todo!()
+        let tt_serializer = TypeTagSerializer {};
+        let tag = T::serialize(key, tt_serializer)?;
+        self.key = Some(tag);
+        Ok(())
     }
 
-    fn serialize_value<T>(&mut self, _value: &T) -> Result<()>
+    fn serialize_value<T>(&mut self, value: &T) -> Result<()>
     where
         T: ?Sized + Serialize,
     {
-        todo!()
+        let tt_serializer = TypeTagSerializer {};
+        let tag = T::serialize(value, tt_serializer)?;
+        let key = self.key.take().unwrap();
+        self.map.push(key, tag);
+        Ok(())
     }
 
     fn end(self) -> Result<Self::Ok> {
-        todo!()
+        assert!(self.key.is_none());
+        Ok(TypeTag::Map(self.map))
     }
 }
 
