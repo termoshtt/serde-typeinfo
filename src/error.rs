@@ -6,13 +6,13 @@ pub struct Error {}
 
 impl ser::Error for Error {
     fn custom<T: Display>(_msg: T) -> Self {
-        todo!()
+        Self {}
     }
 }
 
 impl Display for Error {
     fn fmt(&self, _formatter: &mut fmt::Formatter) -> fmt::Result {
-        todo!()
+        Ok(())
     }
 }
 
