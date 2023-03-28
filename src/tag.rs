@@ -123,6 +123,35 @@ pub enum TypeTag {
     /// # use serde_typeinfo::*;
     /// # use serde::Serialize;
     /// #[derive(Serialize)]
+    /// enum Value {
+    ///     Bool(bool),
+    ///     Char(char),
+    /// }
+    ///
+    /// // heterogeneous sequence
+    /// assert_eq!(
+    ///     TypeTag::from_value(&vec![Value::Bool(true), Value::Char('c')]),
+    ///     TypeTag::Seq(Seq::Hetero(vec![
+    ///         TypeTag::from_value(&Value::Bool(true)),
+    ///         TypeTag::from_value(&Value::Char('c')),
+    ///     ]))
+    /// );
+    ///
+    /// // homogeneous sequence
+    /// assert_eq!(
+    ///     TypeTag::from_value(&vec![Value::Bool(true), Value::Bool(false)]),
+    ///     TypeTag::Seq(Seq::Homo {
+    ///         tag: Box::new(TypeTag::from_value(&Value::Bool(true))),
+    ///         size: 2,
+    ///     })
+    /// );
+    /// ```
+    Seq(Seq),
+
+    /// ```
+    /// # use serde_typeinfo::*;
+    /// # use serde::Serialize;
+    /// #[derive(Serialize)]
     /// struct S(u8, u8);
     ///
     /// assert_eq!(
@@ -247,5 +276,42 @@ pub enum Primitive {
 impl From<Primitive> for TypeTag {
     fn from(p: Primitive) -> Self {
         TypeTag::Primitive(p)
+    }
+}
+
+#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Seq {
+    /// Homogeneous sequence of types
+    Homo { tag: Box<TypeTag>, size: usize },
+    /// Heterogeneous sequence of types
+    Hetero(Vec<TypeTag>),
+    /// No elements
+    Empty,
+}
+
+impl Seq {
+    pub fn new() -> Self {
+        Seq::Empty
+    }
+
+    pub fn push(&mut self, new_tag: TypeTag) {
+        match self {
+            Seq::Hetero(ref mut tags) => tags.push(new_tag),
+            Seq::Homo { tag, size } => {
+                if tag.as_ref() == &new_tag {
+                    *size += 1;
+                } else {
+                    let mut hetero: Vec<TypeTag> = vec![*tag.clone(); *size];
+                    hetero.push(new_tag);
+                    *self = Seq::Hetero(hetero);
+                }
+            }
+            Seq::Empty => {
+                *self = Seq::Homo {
+                    tag: Box::new(new_tag),
+                    size: 1,
+                };
+            }
+        }
     }
 }
