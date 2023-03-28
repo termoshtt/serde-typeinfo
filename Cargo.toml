@@ -2,11 +2,17 @@
 name = "serde-typeinfo"
 version = "0.1.0"
 edition = "2021"
+authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description   = "Runtime type info based on serde data model"
+documentation = "https://docs.rs/serde-typeinfo/"
+repository    = "https://github.com/termoshtt/serde-typeinfo"
+keywords      = ["serde"]
+license       = "MIT OR Apache-2.0"
 
 [dependencies]
-serde = { version = "1.0.158", features = ["derive"] }
+serde = "1.0.158"
 
 [dev-dependencies]
+serde = { version = "1.0.158", features = ["derive"] }
 maplit = "1.0.2"
