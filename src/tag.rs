@@ -331,21 +331,18 @@ impl From<Primitive> for TypeTag {
     }
 }
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default)]
 pub enum Seq {
     /// Homogeneous sequence of types
     Homo { tag: Box<TypeTag>, size: usize },
     /// Heterogeneous sequence of types
     Hetero(Vec<TypeTag>),
     /// No elements
+    #[default]
     Empty,
 }
 
 impl Seq {
-    pub fn new() -> Self {
-        Self::Empty
-    }
-
     pub fn push(&mut self, new_tag: TypeTag) {
         match self {
             Self::Hetero(ref mut tags) => tags.push(new_tag),
@@ -368,7 +365,7 @@ impl Seq {
     }
 }
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default)]
 pub enum Map {
     /// Homogeneous map
     Homo {
@@ -379,14 +376,11 @@ pub enum Map {
     /// Heterogeneous map
     Hetero(Vec<(TypeTag, TypeTag)>),
     /// No elements
+    #[default]
     Empty,
 }
 
 impl Map {
-    pub fn new() -> Self {
-        Self::Empty
-    }
-
     pub fn push(&mut self, new_key: TypeTag, new_value: TypeTag) {
         match self {
             Self::Hetero(ref mut tags) => tags.push((new_key, new_value)),

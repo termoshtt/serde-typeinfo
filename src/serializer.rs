@@ -104,11 +104,15 @@ impl ser::Serializer for TypeTagSerializer {
     }
 
     fn serialize_seq(self, _len: Option<usize>) -> Result<Self::SerializeSeq> {
-        Ok(TypeTagSeq { seq: Seq::new() })
+        Ok(TypeTagSeq {
+            seq: Seq::default(),
+        })
     }
 
     fn serialize_tuple(self, _len: usize) -> Result<Self::SerializeTuple> {
-        Ok(TypeTagSeq { seq: Seq::new() })
+        Ok(TypeTagSeq {
+            seq: Seq::default(),
+        })
     }
 
     fn serialize_tuple_struct(
@@ -138,7 +142,7 @@ impl ser::Serializer for TypeTagSerializer {
 
     fn serialize_map(self, _len: Option<usize>) -> Result<Self::SerializeMap> {
         Ok(TypeTagMap {
-            map: Map::new(),
+            map: Map::default(),
             key: None,
         })
     }
