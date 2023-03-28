@@ -19,7 +19,7 @@ impl ser::Serializer for TypeTagSerializer {
     type SerializeSeq = Self;
     type SerializeTuple = Self;
     type SerializeTupleStruct = TypeTagTupleStruct;
-    type SerializeTupleVariant = Self;
+    type SerializeTupleVariant = TypeTagTupleVariant;
     type SerializeMap = Self;
     type SerializeStruct = TypeTagStruct;
     type SerializeStructVariant = TypeTagStructVariant;
@@ -127,12 +127,16 @@ impl ser::Serializer for TypeTagSerializer {
 
     fn serialize_tuple_variant(
         self,
-        _name: &'static str,
+        name: &'static str,
         _variant_index: u32,
-        _variant: &'static str,
+        variant: &'static str,
         _len: usize,
     ) -> Result<Self::SerializeTupleVariant> {
-        todo!()
+        Ok(TypeTagTupleVariant {
+            name,
+            variant,
+            fields: Vec::new(),
+        })
     }
 
     fn serialize_map(self, _len: Option<usize>) -> Result<Self::SerializeMap> {
@@ -221,19 +225,33 @@ impl ser::SerializeTupleStruct for TypeTagTupleStruct {
     }
 }
 
-impl ser::SerializeTupleVariant for TypeTagSerializer {
+#[derive(Debug)]
+pub struct TypeTagTupleVariant {
+    name: &'static str,
+    variant: &'static str,
+    fields: Vec<TypeTag>,
+}
+
+impl ser::SerializeTupleVariant for TypeTagTupleVariant {
     type Ok = TypeTag;
     type Error = Error;
 
-    fn serialize_field<T>(&mut self, _value: &T) -> Result<()>
+    fn serialize_field<T>(&mut self, value: &T) -> Result<()>
     where
         T: ?Sized + Serialize,
     {
-        todo!()
+        let tt_serializer = TypeTagSerializer {};
+        let tag = T::serialize(value, tt_serializer)?;
+        self.fields.push(tag);
+        Ok(())
     }
 
     fn end(self) -> Result<Self::Ok> {
-        todo!()
+        Ok(TypeTag::TupleVariant {
+            name: self.name,
+            variant: self.variant,
+            fields: self.fields,
+        })
     }
 }
 
