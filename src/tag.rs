@@ -123,6 +123,28 @@ pub enum TypeTag {
     /// # use serde_typeinfo::*;
     /// # use serde::Serialize;
     /// #[derive(Serialize)]
+    /// struct S(u8, u8);
+    ///
+    /// assert_eq!(
+    ///     TypeTag::from_value(&S(1, 2)),
+    ///     TypeTag::TupleStruct {
+    ///         name: "S",
+    ///         fields: vec![
+    ///             TypeTag::Primitive(Primitive::U8),
+    ///             TypeTag::Primitive(Primitive::U8),
+    ///         ]
+    ///     },
+    /// );
+    /// ```
+    TupleStruct {
+        name: &'static str,
+        fields: Vec<Self>,
+    },
+
+    /// ```
+    /// # use serde_typeinfo::*;
+    /// # use serde::Serialize;
+    /// #[derive(Serialize)]
     /// struct S { r: u8, g: u8, b: u8 };
     ///
     /// assert_eq!(
