@@ -1,7 +1,7 @@
 use serde::Serialize;
 
 /// Type tag based on [serde data model](https://serde.rs/data-model.html)
-#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 pub enum TypeTag {
     /// 14 primitive types,
     /// `bool`,
@@ -307,7 +307,7 @@ impl TypeTag {
     }
 }
 
-#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, PartialOrd, Ord, Serialize)]
 pub enum Primitive {
     Bool,
     I8,
@@ -331,7 +331,7 @@ impl From<Primitive> for TypeTag {
     }
 }
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default, Serialize)]
 pub enum Seq {
     /// Homogeneous sequence of types
     Homo { tag: Box<TypeTag>, size: usize },
@@ -365,7 +365,7 @@ impl Seq {
     }
 }
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default, Serialize)]
 pub enum Map {
     /// Homogeneous map
     Homo {
